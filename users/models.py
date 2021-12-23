@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.utils import timezone
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
 class UserManager(BaseUserManager):
@@ -17,7 +18,8 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     username = models.CharField(max_length=40, unique=True)
-    last_login = models.DateTimeField(auto_now=True)
+    last_login = models.DateTimeField(default=timezone.now)
+    last_activity = models.DateTimeField(default=timezone.now)
 
     USERNAME_FIELD = 'username'
 
