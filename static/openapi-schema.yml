@@ -1,0 +1,247 @@
+openapi: 3.0.1
+info:
+  title: Star Navi Test Project
+  description: Swagger documented API
+  contact:
+    email: hnflkmvjcm@gmail.com
+  version: 1.0.0
+servers:
+- url: http://127.0.0.1:8000/api
+tags:
+- name: Users
+  description: User related endpoints
+- name: Posts
+  description: Post related endpoints
+- name: Analytics
+  description: Analytics endpoints
+- name: Token
+  description: Token authentification related endpoints
+paths:
+  /users/signup/:
+    post:
+      tags:
+      - Users
+      summary: Create new user
+      requestBody:
+        description: User object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignup'
+        required: true
+      responses:
+        201:
+          description: Created new user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSignupResponse'
+  /users/login/:
+    post:
+      tags:
+      - Users
+      summary: Login user
+      requestBody:
+        description: Login credentials
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignup'
+        required: true
+      responses:
+        200:
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLoginResponse'
+  /users/activity/{id}/:
+    get:
+      tags:
+      - Users
+      summary: User activity
+      description: Returns last login and last request of selected user
+      parameters:
+      - name: id
+        in: path
+        description: ID of user
+        required: true
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserActivity'
+  /posts/post/:
+    post:
+      tags:
+      - Posts
+      summary: Create new post
+      requestBody:
+        description: Post body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCreate'
+        required: true
+      responses:
+        201:
+          description: Created new post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostResponse'
+      security:
+        - token_authorization:
+  /posts/post/{id}/like/:
+    post:
+      tags:
+      - Posts
+      summary: Like selected post
+      responses:
+        201:
+          description: Liked selected post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostLike'
+      security:
+        - token_authorization:
+  /posts/post/{id}/unlike/:
+    delete:
+      tags:
+      - Posts
+      summary: Unlike selected post
+      responses:
+        204:
+          description: No content
+      security:
+        - token_authorization:
+  /analytics/like/:
+    get:
+      tags:
+      - Analytics
+      summary: Number of likes made during the selected interval
+      parameters:
+      - name: date_from
+        in: query
+        description: Aggreagte likes from selected date included. If not specified - aggreagte from the very beginning.
+      - name: date_to
+        in: query
+        description: Aggregate likes till the selected date included. If not specified - aggregate till the current date.
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LikeCount'
+  /token/refresh/:
+    post:
+      tags:
+      - Token
+      summary: Create access token form refresh token
+      requestBody:
+        description: Valid refresh token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshToken'
+        required: true
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/sjon:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+components:
+  schemas:
+    UserSignup:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    UserSignupResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        refresh:
+          type: string
+        access:
+          type: string
+        username:
+          type: string
+        last_login:
+          type: string
+          format: date-time
+        last_activity:
+          type: string
+          format: date-time
+    UserLoginResponse:
+      type: object
+      properties:
+        refresh:
+          type: string
+        access:
+          type: string
+    UserActivity:
+      type: object
+      properties:
+        last_login:
+          type: string
+          format: date-time
+        last_activity:
+          type: string
+          format: date-time
+    PostCreate:
+      type: object
+      properties:
+        body:
+          type: string
+    PostResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        body:
+          type: string
+        author:
+          type: integer
+    PostLike:
+      type: object
+      properties:
+        id:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+        post:
+          type: integer
+        user:
+          type: integer
+    LikeCount:
+      type: object
+      properties:
+        total:
+          type: integer
+    RefreshToken:
+      type: object
+      properties:
+        refresh:
+          type: string
+    AccessToken:
+      type: object
+      properties:
+        access:
+          type: string
+  securitySchemes:
+    token_authorization:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Add "Bearer " prefix to the token value

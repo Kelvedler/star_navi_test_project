@@ -15,8 +15,10 @@ Including another URLconf
 """
 from rest_framework_simplejwt.views import TokenRefreshView
 from django.urls import path, include
+from django.views.generic import TemplateView
 
 urlpatterns = [
+    path('api/', TemplateView.as_view(template_name='index.html')),
     path('api/token/refresh/', TokenRefreshView.as_view()),
     path('api/analytics/', include('analytics.urls')),
     path('api/users/', include('users.urls')),
