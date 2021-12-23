@@ -23,7 +23,9 @@ class LikeView(mixins.LastActivityTrackerMixin, viewsets.ViewSet):
     model_object = models.Like.objects
     permission_classes = [permissions.IsAuthenticated]
 
-    def create(self, request):
+    def create(self, request, post_id=None):
+        request.data['post'] = post_id
+        request.data['user'] = request.user.id
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()

@@ -17,7 +17,8 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from django.urls import path, include
 
 urlpatterns = [
-    path('token/refresh/', TokenRefreshView.as_view()),
-    path('users/', include('users.urls')),
-    path('posts/', include('posts.urls')),
+    path('api/token/refresh/', TokenRefreshView.as_view()),
+    path('api/analytics/', include('analytics.urls')),
+    path('api/users/', include('users.urls')),
+    path('api/posts/', include('posts.urls')),
 ]
